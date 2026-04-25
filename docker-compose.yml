@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # Web application service
   web:
     build:
       context: .
@@ -21,14 +20,11 @@ services:
       retries: 3
       start_period: 10s
 
-  # Optional: Simple logging container using httpd (for log visualization bonus)
   log-viewer:
     image: nginx:alpine
     container_name: shophub-logs
     ports:
       - "8080:80"
-    volumes:
-      - ./logs:/usr/share/nginx/html/logs:ro
     networks:
       - shophub-network
     depends_on:
@@ -37,7 +33,3 @@ services:
 networks:
   shophub-network:
     driver: bridge
-
-volumes:
-  web-data:
-    driver: local
