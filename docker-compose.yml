@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # Web application service
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shophub-web
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - shophub-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # Optional: Simple logging container using httpd (for log visualization bonus)
+  log-viewer:
+    image: nginx:alpine
+    container_name: shophub-logs
+    ports:
+      - "8080:80"
+    volumes:
+      - ./logs:/usr/share/nginx/html/logs:ro
+    networks:
+      - shophub-network
+    depends_on:
+      - web
+
+networks:
+  shophub-network:
+    driver: bridge
+
+volumes:
+  web-data:
+    driver: local
